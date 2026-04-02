@@ -1,18 +1,20 @@
-# Frontend Dockerfile
-FROM node:18-alpine as frontend-build
-WORKDIR /app/frontend
-COPY frontend/app/package*.json ./
-RUN npm ci
-COPY frontend/app/ .
-RUN npm run build
+# Use a slim Python image
+FROM python:3.11-slim
 
-# Backend Dockerfile
-FROM python:3.9-slim
+# Install dependencies for Pillow
+RUN apt-get update && apt-get install -y \
+    libjpeg-dev \
+    zlib1g-dev \
+    libfreetype6-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+# Set working directory and install requirements
 WORKDIR /app
-COPY backend/requirements.txt .
-RUN pip install -r requirements.txt
-COPY backend/ .
-COPY --from=frontend-build /app/frontend/app/build ./static/
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
 
-EXPOSE 8000
-CMD ["gunicorn", "--bind", "0.0.0.0:8000", "project.wsgi:application"]
+# Copy the rest of your code
+COPY . .
+
+# Replace with your actual start command (e.g., gunicorn)
+CMD ["gunicorn", "project.wsgi:application"]
