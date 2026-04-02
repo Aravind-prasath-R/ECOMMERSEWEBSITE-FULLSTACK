@@ -1,26 +1,14 @@
 {
-  "version": 2,
   "builds": [
     {
-      "src": "frontend/app/package.json",
-      "use": "@vercel/static-build",
-      "config": {
-        "distDir": "frontend/app/build"
-      }
-    },
-    {
-      "src": "backend/ecommerce/project/project/wsgi.py",
+      "src": "project/wsgi.py",
       "use": "@vercel/python"
     }
   ],
   "routes": [
     {
-      "src": "/api/(.*)",
-      "dest": "/backend/ecommerce/project/project/wsgi.py"
-    },
-    {
       "src": "/(.*)",
-      "dest": "/frontend/app/build/$1"
+      "dest": "project/wsgi.py"
     }
   ]
 }
